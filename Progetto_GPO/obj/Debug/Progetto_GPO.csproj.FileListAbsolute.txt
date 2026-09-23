@@ -8,3 +8,14 @@ C:\Users\colleoni.22303\Desktop\Progetto_GPO\Progetto_GPO\obj\Debug\Progetto_GPO
 C:\Users\colleoni.22303\Desktop\Progetto_GPO\Progetto_GPO\obj\Debug\Progetto_GPO.csproj.CoreCompileInputs.cache
 C:\Users\colleoni.22303\Desktop\Progetto_GPO\Progetto_GPO\obj\Debug\Progetto_GPO.exe
 C:\Users\colleoni.22303\Desktop\Progetto_GPO\Progetto_GPO\obj\Debug\Progetto_GPO.pdb
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\obj\Debug\Progetto_GPO.csproj.AssemblyReference.cache
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\obj\Debug\Progetto_GPO.exe.config
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\obj\Debug\Progetto_GPO.Form1.resources
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\obj\Debug\Progetto_GPO.Properties.Resources.resources
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\obj\Debug\Progetto_GPO.csproj.GenerateResource.cache
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\obj\Debug\Progetto_GPO.csproj.CoreCompileInputs.cache
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\obj\Debug\Progetto_GPO.exe
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\obj\Debug\Progetto_GPO.pdb
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\bin\Debug\Progetto_GPO.exe.config
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\bin\Debug\Progetto_GPO.exe
+C:\Users\colleoni.22303\Desktop\Logistica_Manager\Progetto_GPO\bin\Debug\Progetto_GPO.pdb
