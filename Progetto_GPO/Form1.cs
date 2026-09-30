@@ -14,10 +14,11 @@ namespace Progetto_GPO
         public Form1()
         {
             InitializeComponent();
-            groupBoxProduttoriConsumatori.Location = new Point(12, 12);
-            groupBoxDatiExcel.Location = new Point(12, groupBoxProduttoriConsumatori.Bottom + 10);
-            groupBoxValoriCasuali.Location = new Point(12, groupBoxDatiExcel.Bottom + 10);
-            btnRisolviQuattroMetodi.Location = new Point(12, groupBoxValoriCasuali.Bottom + 10);
+            groupBoxProduttoriConsumatori.Location = new Point(0, 12);
+            groupBoxDatiExcel.Location = new Point(0, groupBoxProduttoriConsumatori.Bottom + 10);
+            groupBoxValoriCasuali.Location = new Point(0, groupBoxDatiExcel.Bottom + 10);
+            btnRisolvi.Location = new Point(0, groupBoxValoriCasuali.Bottom + 10);
+            AbilitaAutoSelezioneNumericUpDown(this);
 
             ConfiguraDataGridView();
         }
@@ -37,7 +38,7 @@ namespace Progetto_GPO
                 DataGridViewSelectionMode.CellSelect;
 
             dataGridViewMatrice.MultiSelect = false;
-            dataGridViewMatrice.RowHeadersWidth = 125;
+            dataGridViewMatrice.RowHeadersWidth = 145;
         }
 
         private void btnCreaMatrice_Click(object sender, EventArgs e)
@@ -73,19 +74,19 @@ namespace Progetto_GPO
 
                 if (j < griglia.Columns)
                 {
-                    colonna.Name = "Consumatore" + (j + 1);
-                    colonna.HeaderText = "Consumatore " + (j + 1);
+                    colonna.Name = "CONSUMATORE" + (j + 1);
+                    colonna.HeaderText = "CONSUMATORE " + (j + 1);
                 }
                 else
                 {
-                    colonna.Name = "Produzione";
-                    colonna.HeaderText = "Produzione";
+                    colonna.Name = "PRODUZIONE";
+                    colonna.HeaderText = "PRODUZIONE";
                 }
 
                 colonna.SortMode =
                     DataGridViewColumnSortMode.NotSortable;
 
-                colonna.MinimumWidth = 125;
+                colonna.MinimumWidth = 135;
 
                 dataGridViewMatrice.Columns.Add(colonna);
             }
@@ -100,14 +101,14 @@ namespace Progetto_GPO
                     dataGridViewMatrice
                         .Rows[indiceRiga]
                         .HeaderCell
-                        .Value = "Produttore " + (i + 1);
+                        .Value = "PRODUTTORE " + (i + 1);
                 }
                 else
                 {
                     dataGridViewMatrice
                         .Rows[indiceRiga]
                         .HeaderCell
-                        .Value = "Fabbisogno";
+                        .Value = "FABBIOSOGNO";
                 }
             }
 
@@ -125,6 +126,7 @@ namespace Progetto_GPO
             }
         }
 
+        // INCOLLA EXCELL
         private void btnIncolla_Click(object sender, EventArgs e)
         {
             if (griglia == null)
@@ -139,50 +141,143 @@ namespace Progetto_GPO
                 return;
             }
 
-            try
+            if (!Clipboard.ContainsText())
             {
-                for (int i = 0; i < griglia.Rows; i++)
-                {
-                    for (int j = 0; j < griglia.Columns; j++)
-                    {
-                        object valore =
-                            dataGridViewMatrice
-                                .Rows[i]
-                                .Cells[j]
-                                .Value;
+                MessageBox.Show(
+                    "Negli appunti non c'è nessun testo. Copia prima un intervallo da Excel.",
+                    "Attenzione",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
 
-                        if (valore != null &&
-                            int.TryParse(
-                                valore.ToString(),
-                                out int numero))
-                        {
-                            griglia.ImpostaValore(i, j, numero);
-                        }
-                        else
-                        {
-                            griglia.ImpostaValore(i, j, 0);
-                        }
+                return;
+            }
+
+            int n = griglia.Rows;
+            int m = griglia.Columns;
+
+            int rigaInizio = 0;
+            int colonnaInizio = 0;
+
+            if (dataGridViewMatrice.CurrentCell != null)
+            {
+                rigaInizio = dataGridViewMatrice.CurrentCell.RowIndex;
+                colonnaInizio = dataGridViewMatrice.CurrentCell.ColumnIndex;
+            }
+
+            string testo = Clipboard.GetText().Replace("\r\n", "\n").Replace("\r", "\n");
+            string[] righe = testo.Split('\n');
+
+            int numeroRighe = righe.Length;
+
+            while (numeroRighe > 0 && string.IsNullOrWhiteSpace(righe[numeroRighe - 1]))
+            {
+                numeroRighe--;
+            }
+
+            if (numeroRighe == 0)
+            {
+                MessageBox.Show(
+                    "Gli appunti sono vuoti.",
+                    "Attenzione",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning
+                );
+
+                return;
+            }
+
+            List<int[]> valori = new List<int[]>();
+            int larghezzaMax = 0;
+
+            for (int r = 0; r < numeroRighe; r++)
+            {
+                string[] celle = righe[r].Split('\t');
+                int[] riga = new int[celle.Length];
+
+                for (int c = 0; c < celle.Length; c++)
+                {
+                    string cella = celle[c].Trim();
+
+                    if (cella == "")
+                    {
+                        riga[c] = 0;
+                    }
+                    else if (!int.TryParse(cella, out riga[c]) || riga[c] < 0)
+                    {
+                        MessageBox.Show(
+                            "Valore non valido \"" + cella + "\" alla riga " + (r + 1) +
+                            ", colonna " + (c + 1) + " dei dati copiati.\n\n" +
+                            "Sono ammessi solo numeri interi maggiori o uguali a zero.",
+                            "Errore",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+
+                        return;
                     }
                 }
 
-                MessageBox.Show(
-                    "Dati inseriti correttamente.",
-                    "Operazione completata",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information
-                );
+                valori.Add(riga);
+                larghezzaMax = Math.Max(larghezzaMax, celle.Length);
             }
-            catch (Exception ex)
+
+            if (rigaInizio + numeroRighe > n + 1 || colonnaInizio + larghezzaMax > m + 1)
             {
                 MessageBox.Show(
-                    "Errore durante l'inserimento dei dati:\n\n"
-                    + ex.Message,
+                    "I dati copiati (" + numeroRighe + " righe x " + larghezzaMax + " colonne) " +
+                    "non entrano nella tabella a partire dalla cella selezionata.\n\n" +
+                    "La tabella ha " + n + " produttori e " + m + " consumatori: " +
+                    "seleziona la cella in alto a sinistra e ricontrolla le dimensioni.",
                     "Errore",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
+
+                return;
             }
+
+            for (int r = 0; r < valori.Count; r++)
+            {
+                for (int c = 0; c < valori[r].Length; c++)
+                {
+                    int riga = rigaInizio + r;
+                    int colonna = colonnaInizio + c;
+
+                    if (riga == n && colonna == m)
+                    {
+                        continue;
+                    }
+
+                    dataGridViewMatrice.Rows[riga].Cells[colonna].Value = valori[r][c];
+                }
+            }
+
+            SalvaDatiMatrice();
+
+            int sommaProduzioni = LeggiProduzioni().Sum();
+            int sommaFabbisogni = LeggiFabbisogni().Sum();
+
+            dataGridViewMatrice.Rows[n].Cells[m].Value = sommaProduzioni;
+
+            string avviso = "";
+
+            if (sommaProduzioni != sommaFabbisogni)
+            {
+                avviso = "\n\nAttenzione: la produzione totale (" + sommaProduzioni +
+                         ") è diversa dal fabbisogno totale (" + sommaFabbisogni +
+                         "). Il problema non è bilanciato.";
+            }
+
+            MessageBox.Show(
+                "Dati incollati correttamente." + avviso,
+                "Operazione completata",
+                MessageBoxButtons.OK,
+                avviso == "" ? MessageBoxIcon.Information : MessageBoxIcon.Warning
+            );
         }
+
+        // GENERAZIONE CASUALE
         public static bool RangeFattibile(int n, int m, int min, int max)
         {
             return Math.Max(n, m) * min <= Math.Min(n, m) * max;
@@ -340,6 +435,7 @@ namespace Progetto_GPO
             dataGridViewMatrice.Rows[n].Cells[m].Value = totale;
         }
 
+        // DATA GRID
         private int[] LeggiProduzioni()
         {
             int[] produzioni = new int[griglia.Rows];
@@ -374,6 +470,7 @@ namespace Progetto_GPO
             return fabbisogni;
         }
 
+        // RISOLUTORE
         private void btnRisolviQuattroMetodi_Click(
             object sender,
             EventArgs e)
@@ -425,6 +522,24 @@ namespace Progetto_GPO
                     {
                         griglia.ImpostaValore(i, j, 0);
                     }
+                }
+            }
+        }
+
+        private void AbilitaAutoSelezioneNumericUpDown(Control contenitore)
+        {
+            foreach (Control c in contenitore.Controls)
+            {
+                // Se il controllo è un NumericUpDown, gli assegna il comportamento
+                if (c is NumericUpDown nud)
+                {
+                    nud.Enter += (sender, e) => nud.Select(0, nud.Text.Length);
+                    nud.Click += (sender, e) => nud.Select(0, nud.Text.Length);
+                }
+                // Se contiene altri controlli (es. è dentro un GroupBox), cerca anche lì dentro
+                else if (c.HasChildren)
+                {
+                    AbilitaAutoSelezioneNumericUpDown(c);
                 }
             }
         }

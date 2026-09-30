@@ -5,16 +5,13 @@ namespace Progetto_GPO
     internal class Griglia
     {
         public int[][] Grid { get; private set; }
-
         public int Columns { get; private set; }
-
         public int Rows { get; private set; }
 
         public Griglia(int columns, int rows)
         {
             Columns = columns;
             Rows = rows;
-
             Grid = new int[Rows][];
 
             for (int i = 0; i < Rows; i++)
